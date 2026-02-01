@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>方程式金字塔 Equation Pyramid</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- 頂部計時器區域 -->
+    <header class="header">
+        <div class="timer-container">
+            <div class="seven-segment-display" id="timer">03:00</div>
+            <button class="start-button" id="startBtn">開始</button>
+        </div>
+    </header>
+
+    <!-- 主遊戲區域 -->
+    <main class="game-container">
+        <!-- 左側計分板 -->
+        <aside class="scoreboard-container" id="scoreboardContainer">
+            <button class="scoreboard-toggle" id="scoreboardToggle">
+                <span class="toggle-icon">◀</span>
+                <span class="toggle-text">計分板</span>
+            </button>
+            <div class="scoreboard" id="scoreboard">
+                <h2 class="scoreboard-title">計分板</h2>
+                <div class="team-input-container">
+                    <input type="text" id="teamNameInput" placeholder="輸入隊伍名稱" maxlength="20">
+                    <button class="add-team-btn" id="addTeamBtn">新增</button>
+                </div>
+                <ul class="team-list" id="teamList">
+                    <!-- 隊伍列表由 JS 動態生成 -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- 中央遊戲區 -->
+        <section class="game-area">
+            <!-- 六邊形金字塔 -->
+            <div class="pyramid-container">
+                <div class="pyramid">
+                    <!-- 第一層 (1個) -->
+                    <div class="pyramid-row row-1">
+                        <div class="hexagon" data-index="0" data-letter="A">
+                            <span class="hex-letter">A</span>
+                            <span class="hex-content"></span>
+                        </div>
+                    </div>
+                    <!-- 第二層 (2個) -->
+                    <div class="pyramid-row row-2">
+                        <div class="hexagon" data-index="1" data-letter="B">
+                            <span class="hex-letter">B</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="2" data-letter="C">
+                            <span class="hex-letter">C</span>
+                            <span class="hex-content"></span>
+                        </div>
+                    </div>
+                    <!-- 第三層 (3個) -->
+                    <div class="pyramid-row row-3">
+                        <div class="hexagon" data-index="3" data-letter="D">
+                            <span class="hex-letter">D</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="4" data-letter="E">
+                            <span class="hex-letter">E</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="5" data-letter="F">
+                            <span class="hex-letter">F</span>
+                            <span class="hex-content"></span>
+                        </div>
+                    </div>
+                    <!-- 第四層 (4個) -->
+                    <div class="pyramid-row row-4">
+                        <div class="hexagon" data-index="6" data-letter="G">
+                            <span class="hex-letter">G</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="7" data-letter="H">
+                            <span class="hex-letter">H</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="8" data-letter="I">
+                            <span class="hex-letter">I</span>
+                            <span class="hex-content"></span>
+                        </div>
+                        <div class="hexagon" data-index="9" data-letter="J">
+                            <span class="hex-letter">J</span>
+                            <span class="hex-content"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 公式顯示區 -->
+            <div class="formula-display">
+                <div class="formula-content" id="formulaDisplay">
+                    <span class="formula-placeholder">選擇三個格子組成算式</span>
+                </div>
+                <button class="clear-selection-btn" id="clearSelectionBtn">清除選擇</button>
+            </div>
+
+            <!-- 已使用算式列表 -->
+            <div class="used-formulas-container">
+                <h3 class="used-formulas-title">已使用的算式</h3>
+                <div class="used-formulas-list" id="usedFormulasList">
+                    <!-- 由 JS 動態生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 右側目標數字區 -->
+        <aside class="target-container">
+            <div class="target-box">
+                <div class="target-label">TARGET</div>
+                <div class="target-number" id="targetNumber">?</div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- 音效 -->
+    <audio id="correctSound" src="./sound/correct.mp3" preload="auto"></audio>
+    <audio id="incorrectSound" src="./sound/incorrect.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
