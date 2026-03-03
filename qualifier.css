@@ -1,0 +1,177 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #4b7bec;
+    --accent: #20bf6b;
+    --danger: #eb3b5a;
+    --bg: #f5f7ff;
+    --text: #2d3436;
+    --muted: #6c7a89;
+    --card: #ffffff;
+}
+
+body {
+    font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px 60px;
+}
+
+.qualifier {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.qualifier-header {
+    text-align: center;
+}
+
+.qualifier-header h1 {
+    font-size: 2.4rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.qualifier-header p {
+    color: var(--muted);
+    font-size: 1.1rem;
+}
+
+.card {
+    width: 100%;
+    background: var(--card);
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.equation {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f0f4ff;
+    border: 2px solid #d8e0ff;
+    letter-spacing: 1px;
+}
+
+.input-row {
+    display: flex;
+    gap: 12px;
+}
+
+.input-row input {
+    flex: 1;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #dcdde1;
+    font-size: 1.1rem;
+}
+
+.input-row button {
+    padding: 14px 22px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.input-row button:hover {
+    transform: translateY(-1px);
+    background: #3867d6;
+}
+
+.status {
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--muted);
+    min-height: 28px;
+}
+
+.status.success {
+    color: var(--accent);
+    font-weight: bold;
+}
+
+.status.error {
+    color: var(--danger);
+    font-weight: bold;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+}
+
+.controls button {
+    padding: 12px 28px;
+    border: 2px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.controls button:not(:disabled):hover {
+    background: var(--primary);
+    color: white;
+}
+
+.qualifier-footer {
+    margin-top: 20px;
+}
+
+.page-link {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    background: white;
+    border: 1px solid #dcdde1;
+    color: var(--text);
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.page-link:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+@media (max-width: 640px) {
+    .input-row {
+        flex-direction: column;
+    }
+
+    .equation {
+        font-size: 1.6rem;
+    }
+}

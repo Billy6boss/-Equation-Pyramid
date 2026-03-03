@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>資格賽 | Equation Pyramid</title>
+    <link rel="stylesheet" href="qualifier.css">
+</head>
+<body>
+    <main class="qualifier">
+        <header class="qualifier-header">
+            <h1>資格賽</h1>
+            <p>隨機算式練習，請輸入整數答案。</p>
+        </header>
+
+        <section class="card">
+            <div class="equation" id="equationText">--</div>
+
+            <div class="input-row">
+                <input type="text" id="answerInput" placeholder="輸入整數答案" inputmode="numeric" />
+                <button id="checkBtn">送出答案</button>
+            </div>
+
+            <div class="status" id="statusMessage">請輸入答案並送出</div>
+
+            <div class="controls">
+                <button id="nextBtn" disabled>下一題</button>
+            </div>
+        </section>
+
+        <footer class="qualifier-footer">
+            <a class="page-link" href="index.html">返回正式賽</a>
+        </footer>
+    </main>
+
+    <script src="qualifier.js"></script>
+</body>
+</html>
