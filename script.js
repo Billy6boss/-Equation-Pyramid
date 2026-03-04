@@ -30,6 +30,15 @@ const OPERATOR_DISPLAY = {
     '÷': '÷'
 };
 
+// ===== 記憶模式狀態 =====
+let memoryState = {
+    timer: null,
+    countdown: 0
+};
+
+// ===== 公式顯示狀態 =====
+let formulaHidden = false;
+
 // ===== DOM 元素 =====
 let elements = {};
 
@@ -48,6 +57,9 @@ function initElements() {
         hexagons: document.querySelectorAll('.hexagon'),
         targetNumber: document.getElementById('targetNumber'),
         formulaDisplay: document.getElementById('formulaDisplay'),
+        formulaDisplayWrapper: document.getElementById('formulaDisplayWrapper'),
+        formulaVisibilityBtn: document.getElementById('formulaVisibilityBtn'),
+        resultOnlyBadge: document.getElementById('resultOnlyBadge'),
         clearSelectionBtn: document.getElementById('clearSelectionBtn'),
         usedFormulasList: document.getElementById('usedFormulasList'),
         scoreboardContainer: document.getElementById('scoreboardContainer'),
@@ -57,7 +69,10 @@ function initElements() {
         addTeamBtn: document.getElementById('addTeamBtn'),
         teamList: document.getElementById('teamList'),
         correctSound: document.getElementById('correctSound'),
-        incorrectSound: document.getElementById('incorrectSound')
+        incorrectSound: document.getElementById('incorrectSound'),
+        memoryModeToggle: document.getElementById('memoryModeToggle'),
+        memorySeconds: document.getElementById('memorySeconds'),
+        memoryCountdownOverlay: document.getElementById('memoryCountdownOverlay')
     };
 }
 
@@ -81,6 +96,9 @@ function initEventListeners() {
     elements.teamNameInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') addTeam();
     });
+
+    // 公式顯示切換
+    elements.formulaVisibilityBtn.addEventListener('click', toggleFormulaVisibility);
 }
 
 // ===== 遊戲流程控制 =====
@@ -97,6 +115,12 @@ function startNewRound() {
     gameData.usedFormulas = [];
     gameData.timeRemaining = 180;
     
+    // 移除灰階遮罩
+    const pyramidContainer = document.querySelector('.pyramid-container');
+    if (pyramidContainer) {
+        pyramidContainer.classList.remove('time-ended');
+    }
+    
     // 生成新的格子資料
     generateCells();
     
@@ -111,7 +135,13 @@ function startNewRound() {
     
     // 啟動計時器
     startTimer();
-    
+
+    // 記憶模式
+    stopMemoryCountdown();
+    if (elements.memoryModeToggle.checked) {
+        startMemoryCountdown();
+    }
+
     // 更新按鈕文字
     elements.startBtn.textContent = '進行中...';
     elements.startBtn.disabled = true;
@@ -124,6 +154,13 @@ function endRound() {
     if (gameData.timer) {
         clearInterval(gameData.timer);
         gameData.timer = null;
+    }
+    // 停止記憶模式倒數
+    stopMemoryCountdown();    
+    // 顯示灰階遮罩
+    const pyramidContainer = document.querySelector('.pyramid-container');
+    if (pyramidContainer) {
+        pyramidContainer.classList.add('time-ended');
     }
     
     // 更新按鈕
@@ -151,6 +188,9 @@ function updateCellsUI() {
         } else {
             content.textContent = '';
         }
+
+        // 移除記憶模式隱藏狀態
+        content.classList.remove('memory-hidden');
         
         // 移除選中狀態
         hex.classList.remove('selected');
@@ -234,24 +274,16 @@ function calculateFormula(idx1, idx2, idx3) {
         
         // 分析運算符優先順序
         const isOp2MulDiv = (op2 === '×' || op2 === '÷');
-        const isOp3MulDiv = (op3 === '×' || op3 === '÷');
+        const isOp3MulDiv = (op3 === '×' || op3 === '÷');  
         
-        if (isOp2MulDiv && isOp3MulDiv) {
-            // 兩個都是乘除，從左到右
-            let temp = applyOperator(num1, op2, num2);
-            if (temp === null) return null;
-            result = applyOperator(temp, op3, num3);
-        } else if (isOp2MulDiv) {
-            // 只有 op2 是乘除，先算 num1 op2 num2
-            let temp = applyOperator(num1, op2, num2);
-            if (temp === null) return null;
-            result = applyOperator(temp, op3, num3);
-        } else if (isOp3MulDiv) {
+        if (isOp3MulDiv) {
             // 只有 op3 是乘除，先算 num2 op3 num3
             let temp = applyOperator(num2, op3, num3);
             if (temp === null) return null;
             result = applyOperator(num1, op2, temp);
         } else {
+            // 兩個都是乘除，從左到右
+            // 只有 op2 是乘除，先算 num1 op2 num2
             // 兩個都是加減，從左到右
             let temp = applyOperator(num1, op2, num2);
             if (temp === null) return null;
@@ -402,10 +434,22 @@ function checkAnswer() {
 function showFormulaResult(result, status) {
     const resultClass = status === '正確' ? 'correct' : 'incorrect';
     const resultText = result !== null ? ` = ${result}` : '';
-    
-    elements.formulaDisplay.innerHTML += 
-        `<span>${resultText}</span>
-         <span class="formula-result ${resultClass}">${status}</span>`;
+
+    if (formulaHidden) {
+        // 公式隱藏時，只顯示結果徽章
+        const badge = elements.resultOnlyBadge;
+        const statusIcon = status === '正確' ? '✓' : (status === '已使用' ? '↺' : '✗');
+        const resultPart = result !== null ? `= ${result} ` : '';
+        badge.textContent = `${resultPart}${statusIcon} ${status}`;
+        badge.className = `result-only-badge ${resultClass} active`;
+        setTimeout(() => {
+            badge.classList.remove('active');
+        }, 1500);
+    } else {
+        elements.formulaDisplay.innerHTML += 
+            `<span>${resultText}</span>
+             <span class="formula-result ${resultClass}">${status}</span>`;
+    }
 }
 
 // ===== 已使用算式列表 =====
@@ -450,6 +494,67 @@ function updateTimerDisplay() {
     const seconds = gameData.timeRemaining % 60;
     elements.timer.textContent = 
         `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// ===== 記憶模式 =====
+function startMemoryCountdown() {
+    const seconds = parseInt(elements.memorySeconds.value) || 10;
+    memoryState.countdown = Math.max(3, Math.min(99, seconds));
+    updateMemoryCountdownUI();
+
+    memoryState.timer = setInterval(() => {
+        memoryState.countdown--;
+        updateMemoryCountdownUI();
+        if (memoryState.countdown <= 0) {
+            clearInterval(memoryState.timer);
+            memoryState.timer = null;
+            hideAllCellsContent();
+        }
+    }, 1000);
+}
+
+function stopMemoryCountdown() {
+    if (memoryState.timer) {
+        clearInterval(memoryState.timer);
+        memoryState.timer = null;
+    }
+    memoryState.countdown = 0;
+    const overlay = elements.memoryCountdownOverlay;
+    if (overlay) {
+        overlay.textContent = '';
+        overlay.classList.remove('active', 'locked');
+    }
+}
+
+function updateMemoryCountdownUI() {
+    const overlay = elements.memoryCountdownOverlay;
+    if (!overlay) return;
+    overlay.textContent = `👁 記憶倒數: ${memoryState.countdown} 秒`;
+    overlay.classList.add('active');
+    overlay.classList.remove('locked');
+}
+
+function hideAllCellsContent() {
+    elements.hexagons.forEach(hex => {
+        const content = hex.querySelector('.hex-content');
+        if (content) {
+            content.textContent = '?';
+            content.classList.add('memory-hidden');
+        }
+    });
+    // 顯示鎖定提示
+    const overlay = elements.memoryCountdownOverlay;
+    if (overlay) {
+        overlay.textContent = '🔒 記憶模式';
+        overlay.classList.add('active', 'locked');
+    }
+}
+
+// ===== 公式顯示切換 =====
+function toggleFormulaVisibility() {
+    formulaHidden = !formulaHidden;
+    elements.formulaDisplayWrapper.classList.toggle('formula-hidden', formulaHidden);
+    elements.formulaVisibilityBtn.textContent = formulaHidden ? '👁 顯示公式' : '👁 隱藏公式';
 }
 
 // ===== 音效 =====

@@ -12,6 +12,16 @@
         <div class="timer-container">
             <div class="seven-segment-display" id="timer">03:00</div>
             <button class="start-button" id="startBtn">開始</button>
+            <div class="memory-mode-controls">
+                <label class="memory-toggle-label">
+                    <input type="checkbox" id="memoryModeToggle">
+                    記憶模式
+                </label>
+                <div class="memory-seconds-container">
+                    <input type="number" id="memorySeconds" class="memory-seconds-input" value="10" min="3" max="99">
+                    <span>秒</span>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -39,6 +49,7 @@
         <section class="game-area">
             <!-- 六邊形金字塔 -->
             <div class="pyramid-container">
+                <div class="memory-countdown-overlay" id="memoryCountdownOverlay"></div>
                 <div class="pyramid">
                     <!-- 第一層 (1個) -->
                     <div class="pyramid-row row-1">
@@ -96,11 +107,15 @@
             </div>
 
             <!-- 公式顯示區 -->
-            <div class="formula-display">
-                <div class="formula-content" id="formulaDisplay">
-                    <span class="formula-placeholder">選擇三個格子組成算式</span>
+            <div class="formula-section">
+                <button class="formula-visibility-btn" id="formulaVisibilityBtn">👁 隱藏公式</button>
+                <div class="formula-display" id="formulaDisplayWrapper">
+                    <div class="formula-content" id="formulaDisplay">
+                        <span class="formula-placeholder">選擇三個格子組成算式</span>
+                    </div>
+                    <button class="clear-selection-btn" id="clearSelectionBtn">清除選擇</button>
                 </div>
-                <button class="clear-selection-btn" id="clearSelectionBtn">清除選擇</button>
+                <div class="result-only-badge" id="resultOnlyBadge"></div>
             </div>
 
             <!-- 已使用算式列表 -->
@@ -124,6 +139,10 @@
     <!-- 音效 -->
     <audio id="correctSound" src="./sound/correct.mp3" preload="auto"></audio>
     <audio id="incorrectSound" src="./sound/incorrect.mp3" preload="auto"></audio>
+
+    <footer class="page-footer">
+        <a class="page-link" href="qualifier.html">前往資格賽頁面</a>
+    </footer>
 
     <script src="script.js"></script>
 </body>
