@@ -18,7 +18,7 @@ let gameData = {
     selectedCells: [],      // 已選擇的格子索引
     usedFormulas: [],       // 本回合已使用的算式
     timer: null,            // 計時器
-    timeRemaining: 180      // 剩餘時間（秒）
+    timeRemaining: 90      // 剩餘時間（秒）
 };
 
 // ===== 運算符號 =====
@@ -113,7 +113,7 @@ function startNewRound() {
     gameData.state = GameState.PLAYING;
     gameData.selectedCells = [];
     gameData.usedFormulas = [];
-    gameData.timeRemaining = 180;
+    gameData.timeRemaining = 90;
     
     // 移除灰階遮罩
     const pyramidContainer = document.querySelector('.pyramid-container');
@@ -221,6 +221,9 @@ function calculateTargetNumber() {
             }
         }
     }
+    
+    // 顯示所有可能的結果及其頻率（開發者工具用）    
+    console.log('所有可能的結果及其頻率:', results);
     
     // 找出出現頻率最高的數字（排除太常見或太罕見的）
     const sortedResults = Object.entries(results)

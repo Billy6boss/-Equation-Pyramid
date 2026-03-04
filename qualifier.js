@@ -15,8 +15,18 @@ const elements = {
     answerInput: document.getElementById('answerInput'),
     checkBtn: document.getElementById('checkBtn'),
     nextBtn: document.getElementById('nextBtn'),
-    statusMessage: document.getElementById('statusMessage')
+    statusMessage: document.getElementById('statusMessage'),
+    correctSound: document.getElementById('correctSound'),
+    incorrectSound: document.getElementById('incorrectSound')
 };
+
+function playSound(type) {
+    const sound = type === 'correct' ? elements.correctSound : elements.incorrectSound;
+    if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.log('Audio play failed:', e));
+    }
+}
 
 function init() {
     generateNewQuestion();
@@ -101,16 +111,21 @@ function checkAnswer() {
     if (answer === currentQuestion.result) {
         setStatus('正確！可以前往下一題', 'success');
         elements.nextBtn.disabled = false;
+        playSound('correct');
     } else {
         setStatus('錯誤，再試一次', 'error');
+        playSound('incorrect');
     }
 }
 
 function setStatus(message, type) {
-    elements.statusMessage.textContent = message;
-    elements.statusMessage.classList.remove('success', 'error');
+    const el = elements.statusMessage;
+    // 強制重觸發動畫
+    el.classList.remove('success', 'error');
+    void el.offsetWidth; // reflow
+    el.textContent = message;
     if (type) {
-        elements.statusMessage.classList.add(type);
+        el.classList.add(type);
     }
 }
 
